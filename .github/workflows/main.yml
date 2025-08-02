@@ -1,13 +1,16 @@
-name: Node.js Bot CI/CD
+name: Node.js CI
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
-  build-and-deploy:
+  build:
+
     runs-on: ubuntu-latest
 
     strategy:
@@ -15,30 +18,16 @@ jobs:
         node-version: [20.x]
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
 
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
+    - name: Install dependencies
+      run: npm install
 
-      - name: Build project
-        run: |
-          if [ -f tsconfig.json ]; then
-            npm run build || echo "No build script"
-          fi
-
-      - name: Start bot (only if main file exists)
-        run: |
-          if [ -f index.js ]; then
-            node index.js
-          elif [ -f main.js ]; then
-            node main.js
-          else
-            echo "No start file found"
-          fi
-```
+    - name: Start application
+      run: npm start
